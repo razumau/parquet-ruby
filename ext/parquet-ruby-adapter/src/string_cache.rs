@@ -44,7 +44,7 @@ impl StringCache {
                 // Create Ruby string and intern it in Ruby's VM
                 // The interned string lives in Ruby's internal table even after
                 // InternedStr is dropped
-                let rstring = RString::new(&s);
+                let rstring = Ruby::str_new(&s);
                 let _interned = rstring.to_interned_str();
 
                 cache.insert(s.clone());

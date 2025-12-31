@@ -1348,7 +1348,7 @@ impl RubyValueConverter {
 
         for field in fields {
             let field_name = field.name();
-            let ruby_key = Symbol::new(field_name);
+            let ruby_key = Ruby::to_symbol(field_name);
 
             // Try symbol key first, then string key
             let field_value = if let Some(val) = hash.get(ruby_key) {
@@ -1541,7 +1541,7 @@ pub fn parquet_to_ruby(value: ParquetValue) -> Result<Value> {
                     (
                         secs,
                         nsec,
-                        Symbol::new("nanosecond"),
+                        Ruby::to_symbol("nanosecond"),
                         kwargs!("in" => "UTC"),
                     ),
                 )
@@ -1583,7 +1583,7 @@ pub fn parquet_to_ruby(value: ParquetValue) -> Result<Value> {
                     (
                         secs,
                         nsec,
-                        Symbol::new("nanosecond"),
+                        Ruby::to_symbol("nanosecond"),
                         kwargs!("in" => "UTC"),
                     ),
                 )

@@ -58,12 +58,12 @@ pub fn finalize_writer(writer_output: WriterOutput) -> Result<(), MagnusError> {
     match writer_output {
         WriterOutput::File(writer) => writer
             .close()
-            .map_err(|e| MagnusError::new(magnus::exception::runtime_error(), e.to_string())),
+            .map_err(|e| MagnusError::new(Ruby::exception_runtime_error(), e.to_string())),
         WriterOutput::TempFile(writer, temp_file, io_object) => {
             // Close the writer first
             writer
                 .close()
-                .map_err(|e| MagnusError::new(magnus::exception::runtime_error(), e.to_string()))?;
+                .map_err(|e| MagnusError::new(Ruby::exception_runtime_error(), e.to_string()))?;
 
             // Copy temp file to IO object
             copy_temp_file_to_io(temp_file, io_object)
@@ -75,7 +75,7 @@ pub fn finalize_writer(writer_output: WriterOutput) -> Result<(), MagnusError> {
 fn copy_temp_file_to_io(temp_file: NamedTempFile, io_object: Value) -> Result<(), MagnusError> {
     let file = temp_file.reopen().map_err(|e| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             format!("Failed to reopen temporary file: {}", e),
         )
     })?;
@@ -86,14 +86,14 @@ fn copy_temp_file_to_io(temp_file: NamedTempFile, io_object: Value) -> Result<()
 
     std::io::copy(&mut buf_reader, &mut buf_writer).map_err(|e| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             format!("Failed to copy temp file to IO object: {}", e),
         )
     })?;
 
     buf_writer.flush().map_err(|e| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             format!("Failed to flush IO object: {}", e),
         )
     })?;

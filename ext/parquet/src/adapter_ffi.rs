@@ -7,7 +7,7 @@ use parquet_ruby_adapter::{
 pub fn each_row(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError> {
     let ruby = Ruby::get().map_err(|_| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             "Failed to get Ruby runtime",
         )
     })?;
@@ -36,11 +36,11 @@ pub fn each_row(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError> {
     let result_type: ParserResultType = if let Some(rt_value) = kwargs.optional.0.flatten() {
         parse_string_or_symbol(&ruby, rt_value)?
             .ok_or_else(|| {
-                MagnusError::new(magnus::exception::arg_error(), "result_type cannot be nil")
+                MagnusError::new(Ruby::exception_arg_error(), "result_type cannot be nil")
             })?
             .parse()
             .map_err(|_| {
-                MagnusError::new(magnus::exception::arg_error(), "Invalid result_type value")
+                MagnusError::new(Ruby::exception_arg_error(), "Invalid result_type value")
             })?
     } else {
         ParserResultType::Hash
@@ -64,7 +64,7 @@ pub fn each_row(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError> {
 pub fn each_column(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError> {
     let ruby = Ruby::get().map_err(|_| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             "Failed to get Ruby runtime",
         )
     })?;
@@ -94,11 +94,11 @@ pub fn each_column(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError>
     let result_type: ParserResultType = if let Some(rt_value) = kwargs.optional.0.flatten() {
         parse_string_or_symbol(&ruby, rt_value)?
             .ok_or_else(|| {
-                MagnusError::new(magnus::exception::arg_error(), "result_type cannot be nil")
+                MagnusError::new(Ruby::exception_arg_error(), "result_type cannot be nil")
             })?
             .parse()
             .map_err(|_| {
-                MagnusError::new(magnus::exception::arg_error(), "Invalid result_type value")
+                MagnusError::new(Ruby::exception_arg_error(), "Invalid result_type value")
             })?
     } else {
         ParserResultType::Hash
@@ -107,7 +107,7 @@ pub fn each_column(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError>
     let batch_size = if let Some(bs) = kwargs.optional.2.flatten() {
         if bs == 0 {
             return Err(MagnusError::new(
-                magnus::exception::arg_error(),
+                Ruby::exception_arg_error(),
                 "batch_size must be greater than 0",
             ));
         }
@@ -134,7 +134,7 @@ pub fn each_column(rb_self: Value, args: &[Value]) -> Result<Value, MagnusError>
 pub fn write_rows(args: &[Value]) -> Result<Value, MagnusError> {
     let ruby = Ruby::get().map_err(|_| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             "Failed to get Ruby runtime",
         )
     })?;
@@ -149,7 +149,7 @@ pub fn write_rows(args: &[Value]) -> Result<Value, MagnusError> {
 pub fn write_columns(args: &[Value]) -> Result<Value, MagnusError> {
     let ruby = Ruby::get().map_err(|_| {
         MagnusError::new(
-            magnus::exception::runtime_error(),
+            Ruby::exception_runtime_error(),
             "Failed to get Ruby runtime",
         )
     })?;

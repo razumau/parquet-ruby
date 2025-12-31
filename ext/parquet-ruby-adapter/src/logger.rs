@@ -12,7 +12,7 @@ impl RubyLogger {
             for method in &["debug", "info", "warn", "error"] {
                 if !log.respond_to(*method, false)? {
                     return Err(MagnusError::new(
-                        magnus::exception::arg_error(),
+                        Ruby::exception_arg_error(),
                         format!("Logger must respond to {}", method),
                     ));
                 }

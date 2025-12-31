@@ -72,7 +72,7 @@ pub fn parse_compression(compression: Option<String>) -> Result<Compression, Mag
         Some("brotli") => Ok(Compression::BROTLI(parquet::basic::BrotliLevel::default())),
         None => Ok(Compression::SNAPPY), // Default to SNAPPY
         Some(other) => Err(MagnusError::new(
-            magnus::exception::arg_error(),
+            Ruby::exception_arg_error(),
             format!("Invalid compression option: '{}'. Valid options are: none, snappy, gzip, lz4, zstd, brotli", other),
         )),
     }
@@ -156,19 +156,19 @@ where
 
 /// Create a row enumerator
 pub fn create_row_enumerator(args: RowEnumeratorArgs) -> Result<magnus::Enumerator, MagnusError> {
-    let kwargs = RHash::new();
+    let kwargs = Ruby::hash_new();
     kwargs.aset(
-        Symbol::new("result_type"),
-        Symbol::new(args.result_type.to_string()),
+        Ruby::to_symbol("result_type"),
+        Ruby::to_symbol(args.result_type.to_string()),
     )?;
     if let Some(columns) = args.columns {
-        kwargs.aset(Symbol::new("columns"), RArray::from_vec(columns))?;
+        kwargs.aset(Ruby::to_symbol("columns"), RArray::from_vec(columns))?;
     }
     if args.strict {
-        kwargs.aset(Symbol::new("strict"), true)?;
+        kwargs.aset(Ruby::to_symbol("strict"), true)?;
     }
     if let Some(logger) = args.logger {
-        kwargs.aset(Symbol::new("logger"), logger)?;
+        kwargs.aset(Ruby::to_symbol("logger"), logger)?;
     }
     Ok(args
         .rb_self
@@ -180,22 +180,22 @@ pub fn create_row_enumerator(args: RowEnumeratorArgs) -> Result<magnus::Enumerat
 pub fn create_column_enumerator(
     args: ColumnEnumeratorArgs,
 ) -> Result<magnus::Enumerator, MagnusError> {
-    let kwargs = RHash::new();
+    let kwargs = Ruby::hash_new();
     kwargs.aset(
-        Symbol::new("result_type"),
-        Symbol::new(args.result_type.to_string()),
+        Ruby::to_symbol("result_type"),
+        Ruby::to_symbol(args.result_type.to_string()),
     )?;
     if let Some(columns) = args.columns {
-        kwargs.aset(Symbol::new("columns"), RArray::from_vec(columns))?;
+        kwargs.aset(Ruby::to_symbol("columns"), RArray::from_vec(columns))?;
     }
     if let Some(batch_size) = args.batch_size {
-        kwargs.aset(Symbol::new("batch_size"), batch_size)?;
+        kwargs.aset(Ruby::to_symbol("batch_size"), batch_size)?;
     }
     if args.strict {
-        kwargs.aset(Symbol::new("strict"), true)?;
+        kwargs.aset(Ruby::to_symbol("strict"), true)?;
     }
     if let Some(logger) = args.logger {
-        kwargs.aset(Symbol::new("logger"), logger)?;
+        kwargs.aset(Ruby::to_symbol("logger"), logger)?;
     }
     Ok(args
         .rb_self

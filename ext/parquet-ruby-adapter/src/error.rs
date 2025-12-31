@@ -92,7 +92,7 @@ impl From<RubyAdapterError> for MagnusError {
             Err(_) => {
                 // Fallback if we can't get Ruby runtime
                 MagnusError::new(
-                    magnus::exception::runtime_error(),
+                    Ruby::exception_runtime_error(),
                     format!("Failed to get Ruby runtime: {}", err),
                 )
             }
