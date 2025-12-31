@@ -1,10 +1,10 @@
-use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::{Arc, LazyLock, Mutex};
 
 use magnus::RString;
 
-static STRING_CACHE: LazyLock<Mutex<HashMap<String, &'static str>>> =
-    LazyLock::new(|| Mutex::new(HashMap::with_capacity(100)));
+static STRING_CACHE: LazyLock<Mutex<HashSet<String>>> =
+    LazyLock::new(|| Mutex::new(HashSet::with_capacity(100)));
 
 /// A cache for interning strings in the Ruby VM to reduce memory usage
 /// when there are many repeated strings
@@ -37,16 +37,17 @@ impl StringCache {
         let result = (|| -> Result<(), String> {
             let mut cache = STRING_CACHE.lock().map_err(|e| e.to_string())?;
 
-            if cache.contains_key(s.as_str()) {
+            if cache.contains(s.as_str()) {
                 let mut hits = self.hits.lock().map_err(|e| e.to_string())?;
                 *hits += 1;
             } else {
-                // Create Ruby string and intern it
+                // Create Ruby string and intern it in Ruby's VM
+                // The interned string lives in Ruby's internal table even after
+                // InternedStr is dropped
                 let rstring = RString::new(&s);
-                let interned = rstring.to_interned_str();
-                let static_str = interned.as_str().map_err(|e| e.to_string())?;
+                let _interned = rstring.to_interned_str();
 
-                cache.insert(s.clone(), static_str);
+                cache.insert(s.clone());
 
                 let mut misses = self.misses.lock().map_err(|e| e.to_string())?;
                 *misses += 1;
